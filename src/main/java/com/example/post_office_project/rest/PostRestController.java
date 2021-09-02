@@ -9,7 +9,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/post/")
+@RequestMapping("/posts/")
 public class PostRestController {
     @Autowired
     PostService postService;
@@ -18,7 +18,10 @@ public class PostRestController {
     public ResponseEntity<Post> getPost(@PathVariable(name = "post_id") Long postId){
         Post post = postService.getPostById(postId);
 
-        return ((post != null) ?  new ResponseEntity<>(HttpStatus.OK) : new ResponseEntity<>(HttpStatus.NOT_FOUND));
+        if (post == null) {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
+        return new ResponseEntity<>(post, HttpStatus.OK);
     }
 
     @PostMapping("create")
@@ -32,8 +35,8 @@ public class PostRestController {
         return new ResponseEntity<>(post, HttpStatus.CREATED);
     }
 
-    @PutMapping("update")
-    public ResponseEntity<Post> updateUser(@RequestBody Post post){
+    @PutMapping("update/{post_id}")
+    public ResponseEntity<Post> updateUser(@PathVariable(name = "post_id") Long postId, @RequestBody Post post){
         if (post == null) {
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
@@ -60,6 +63,10 @@ public class PostRestController {
     public ResponseEntity<Post> getAllPosts(){
         List<Post> postList = postService.getAllPosts();
 
-        return ((postList != null) ?  new ResponseEntity<>(HttpStatus.OK) : new ResponseEntity<>(HttpStatus.NOT_FOUND));
+        if (postList == null) {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
+
+        return new ResponseEntity<>(HttpStatus.OK);
     }
 }
